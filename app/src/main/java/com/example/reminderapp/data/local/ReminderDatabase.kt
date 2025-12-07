@@ -10,7 +10,7 @@ import com.example.reminderapp.data.model.Reminder
 
 @Database(
     entities = [Reminder::class],
-    version = 3, // 🔥 IMPORTANT: must match existing DB version to stop the crash
+    version = 3,
     exportSchema = false
 )
 abstract class ReminderDatabase : RoomDatabase() {
@@ -31,8 +31,6 @@ abstract class ReminderDatabase : RoomDatabase() {
             }
         }
 
-        // Optional: If you had a version 2 → 3 change in the past,
-        // but you no longer need it, fallbackToDestructiveMigration handles it.
 
         fun getInstance(context: Context): ReminderDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -45,8 +43,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                     // Existing migration 1 → 2
                     .addMigrations(MIGRATION_1_2)
 
-                    // 🔥 PREVENT ROOM FROM CRASHING ON STARTUP
-                    // If schema mismatches, delete and recreate DB automatically.
+
                     .fallbackToDestructiveMigration()
 
                     .build()

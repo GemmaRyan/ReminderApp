@@ -194,7 +194,6 @@ fun AddReminderScreen(
     }
 }
 
-// --------------------------------------------------
 
 @Composable
 private fun ColorSelector(
