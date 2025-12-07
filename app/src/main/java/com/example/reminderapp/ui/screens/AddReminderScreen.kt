@@ -5,8 +5,10 @@ import android.app.TimePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -58,7 +60,9 @@ fun AddReminderScreen(
             modifier = Modifier
                 .padding(padding)
                 .padding(16.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState()),   // ⭐ ENABLE SCROLLING
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
 
@@ -184,9 +188,13 @@ fun AddReminderScreen(
                 Spacer(Modifier.width(8.dp))
                 Text("Save Reminder")
             }
+
+            Spacer(modifier = Modifier.height(20.dp)) // extra space at bottom
         }
     }
 }
+
+// --------------------------------------------------
 
 @Composable
 private fun ColorSelector(
@@ -227,7 +235,8 @@ private fun ColorSelector(
     }
 }
 
-/** Date + Time helpers */
+// --------------------------------------------------
+
 private fun showDatePicker(
     context: android.content.Context,
     initialDate: Calendar,
@@ -253,9 +262,7 @@ private fun showTimePicker(
 ) {
     TimePickerDialog(
         context,
-        { _, hour, minute ->
-            onTimeSelected(hour, minute)
-        },
+        { _, hour, minute -> onTimeSelected(hour, minute) },
         calendar.get(Calendar.HOUR_OF_DAY),
         calendar.get(Calendar.MINUTE),
         true

@@ -3,6 +3,7 @@ package com.example.reminderapp.ui.screens
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.example.reminderapp.data.model.Reminder
 import com.example.reminderapp.ui.components.TopAppBarComponent
 import com.example.reminderapp.ui.theme.*
@@ -114,9 +117,6 @@ fun ViewReminderScreen(
                                 scope.launch {
                                     viewModel.deleteReminder(r)
                                     showDeleteDialog = false
-
-                                    // 🔴 IMPORTANT FIX:
-                                    // ONLY call this – it will pop back in NavGraph
                                     onReminderDeleted()
                                 }
                             }
@@ -142,9 +142,8 @@ fun ViewReminderScreen(
                     .fillMaxSize()
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            ) { CircularProgressIndicator() }
+
         } else {
             Column(
                 modifier = Modifier
@@ -153,7 +152,9 @@ fun ViewReminderScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
+
                 if (isEditMode) {
+
                     EditModeContent(
                         title = editTitle,
                         onTitleChange = { editTitle = it },
@@ -201,6 +202,7 @@ fun ViewReminderScreen(
                             isEditMode = false
                         }
                     )
+
                 } else {
                     ViewModeContent(reminder = reminder!!)
                 }
@@ -211,6 +213,8 @@ fun ViewReminderScreen(
 
 @Composable
 private fun ViewModeContent(reminder: Reminder) {
+
+    // ---- TOP card ----
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -221,54 +225,34 @@ private fun ViewModeContent(reminder: Reminder) {
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Text(
-                text = reminder.title,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
+            Text(reminder.title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.CalendarToday,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+                Icon(Icons.Default.CalendarToday, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
                 Text(formatDate(reminder.date))
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.AccessTime,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+                Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
                 Text(reminder.time)
             }
         }
     }
 
+    // ---- LOCATION ----
     if (reminder.location.isNotBlank()) {
-        DetailCard(
-            icon = Icons.Default.LocationOn,
-            title = "Location",
-            content = reminder.location
-        )
+        DetailCard(Icons.Default.LocationOn, "Location", reminder.location)
     }
 
+    // ---- NOTES ----
     if (reminder.description.isNotBlank()) {
-        DetailCard(
-            icon = Icons.Default.Notes,
-            title = "Notes",
-            content = reminder.description
-        )
+        DetailCard(Icons.Default.Notes, "Notes", reminder.description)
     }
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -278,14 +262,30 @@ private fun ViewModeContent(reminder: Reminder) {
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    // ⭐⭐⭐ IMAGE AT BOTTOM ⭐⭐⭐
+    if (reminder.imagePath.isNotBlank()) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(260.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(reminder.imagePath),
+                contentDescription = "Reminder photo",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
 }
 
+
 @Composable
-private fun DetailCard(
-    icon: ImageVector,
-    title: String,
-    content: String
-) {
+private fun DetailCard(icon: ImageVector, title: String, content: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -294,27 +294,12 @@ private fun DetailCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = content,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Spacer(Modifier.height(8.dp))
+            Text(content, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
@@ -347,45 +332,35 @@ private fun EditModeContent(
         leadingIcon = { Icon(Icons.Default.Title, contentDescription = null) }
     )
 
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(Modifier.height(16.dp))
 
     OutlinedTextField(
         value = formatDate(date.timeInMillis),
-        onValueChange = { },
+        onValueChange = {},
         label = { Text("Date") },
         modifier = Modifier
             .fillMaxWidth()
             .clickable { showDatePicker(context, date, onDateChange) },
         enabled = false,
         readOnly = true,
-        leadingIcon = { Icon(Icons.Default.CalendarToday, contentDescription = null) },
-        colors = TextFieldDefaults.colors(
-            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-            disabledContainerColor = MaterialTheme.colorScheme.surface,
-            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        leadingIcon = { Icon(Icons.Default.CalendarToday, contentDescription = null) }
     )
 
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(Modifier.height(16.dp))
 
     OutlinedTextField(
         value = time,
-        onValueChange = { },
+        onValueChange = {},
         label = { Text("Time") },
         modifier = Modifier
             .fillMaxWidth()
             .clickable { showTimePicker(context, date, onTimeChange) },
         enabled = false,
         readOnly = true,
-        leadingIcon = { Icon(Icons.Default.AccessTime, contentDescription = null) },
-        colors = TextFieldDefaults.colors(
-            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-            disabledContainerColor = MaterialTheme.colorScheme.surface,
-            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        leadingIcon = { Icon(Icons.Default.AccessTime, contentDescription = null) }
     )
 
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(Modifier.height(16.dp))
 
     OutlinedTextField(
         value = location,
@@ -396,7 +371,7 @@ private fun EditModeContent(
         leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) }
     )
 
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(Modifier.height(16.dp))
 
     OutlinedTextField(
         value = description,
@@ -409,22 +384,15 @@ private fun EditModeContent(
         leadingIcon = { Icon(Icons.Default.Notes, contentDescription = null) }
     )
 
-    Spacer(modifier = Modifier.height(24.dp))
+    Spacer(Modifier.height(24.dp))
 
-    Text(
-        text = "Select Color",
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold
-    )
+    Text("Select Color", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
-    Spacer(modifier = Modifier.height(12.dp))
+    Spacer(Modifier.height(12.dp))
 
-    ColorSelector(
-        selectedColorCode = colorCode,
-        onColorSelected = onColorCodeChange
-    )
+    ColorSelector(selectedColorCode = colorCode, onColorSelected = onColorCodeChange)
 
-    Spacer(modifier = Modifier.height(32.dp))
+    Spacer(Modifier.height(32.dp))
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -432,24 +400,18 @@ private fun EditModeContent(
     ) {
         OutlinedButton(
             onClick = onCancel,
-            modifier = Modifier
-                .weight(1f)
-                .height(56.dp),
+            modifier = Modifier.weight(1f).height(56.dp),
             shape = RoundedCornerShape(28.dp)
-        ) {
-            Text("Cancel")
-        }
+        ) { Text("Cancel") }
 
         Button(
             onClick = onSave,
-            modifier = Modifier
-                .weight(1f)
-                .height(56.dp),
+            modifier = Modifier.weight(1f).height(56.dp),
             shape = RoundedCornerShape(28.dp),
             enabled = title.isNotBlank()
         ) {
             Icon(Icons.Default.Save, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(Modifier.width(8.dp))
             Text("Save")
         }
     }
@@ -494,8 +456,8 @@ private fun ColorSelector(
     }
 }
 
-private fun getReminderColor(colorCode: Int): Color {
-    return when (colorCode) {
+private fun getReminderColor(colorCode: Int): Color =
+    when (colorCode) {
         0 -> ReminderBlue
         1 -> ReminderPink
         2 -> ReminderGreen
@@ -503,7 +465,6 @@ private fun getReminderColor(colorCode: Int): Color {
         4 -> ReminderPurple
         else -> ReminderBlue
     }
-}
 
 private fun showDatePicker(
     context: Context,
@@ -537,8 +498,6 @@ private fun showTimePicker(
     ).show()
 }
 
-private fun formatDate(timestamp: Long): String {
-    return SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault())
+private fun formatDate(timestamp: Long): String =
+    SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault())
         .format(Date(timestamp))
-}
-
