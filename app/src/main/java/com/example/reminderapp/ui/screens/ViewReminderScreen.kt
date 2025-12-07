@@ -541,3 +541,4 @@ private fun formatDate(timestamp: Long): String {
     return SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault())
         .format(Date(timestamp))
 }
+
