@@ -21,7 +21,7 @@ class ReminderViewModel(
     private val _allReminders = MutableStateFlow<List<Reminder>>(emptyList())
     val allReminders: StateFlow<List<Reminder>> = _allReminders.asStateFlow()
 
-    // ---------- REMINDERS FOR SELECTED DATE ----------
+    // ---------- SELECTED DATE ----------
     private val _selectedDate = MutableStateFlow<Long?>(null)
     val selectedDate: StateFlow<Long?> = _selectedDate.asStateFlow()
 
@@ -29,14 +29,14 @@ class ReminderViewModel(
     val remindersForSelectedDate: StateFlow<List<Reminder>> = _remindersForSelectedDate.asStateFlow()
 
     init {
-        // Observe dark mode from DataStore
+        // Observe dark mode
         viewModelScope.launch {
             prefs.isDarkMode.collect { enabled ->
                 _isDarkMode.value = enabled
             }
         }
 
-        // Observe all reminders live from DB
+        // Observe ALL reminders from DB
         viewModelScope.launch {
             repository.getAllReminders().collect { list ->
                 _allReminders.value = list
@@ -62,29 +62,24 @@ class ReminderViewModel(
     }
 
     // ---------- CRUD ----------
-    // CREATE
     fun insertReminder(reminder: Reminder) {
         viewModelScope.launch {
             repository.insertReminder(reminder)
-            // allReminders flow auto-updates because we observe DAO
         }
     }
 
-    // UPDATE
     fun updateReminder(reminder: Reminder) {
         viewModelScope.launch {
             repository.updateReminder(reminder)
         }
     }
 
-    // DELETE
     fun deleteReminder(reminder: Reminder) {
         viewModelScope.launch {
             repository.deleteReminder(reminder)
         }
     }
 
-    // GET by ID (for ViewReminderScreen)
     suspend fun getReminderById(id: Int): Reminder? {
         return repository.getReminderById(id)
     }

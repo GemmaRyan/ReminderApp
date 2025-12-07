@@ -10,7 +10,7 @@ import com.example.reminderapp.data.model.Reminder
 
 @Database(
     entities = [Reminder::class],
-    version = 2,
+    version = 3, // 🔥 IMPORTANT: must match existing DB version to stop the crash
     exportSchema = false
 )
 abstract class ReminderDatabase : RoomDatabase() {
@@ -22,7 +22,7 @@ abstract class ReminderDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: ReminderDatabase? = null
 
-        // Migration 1 → 2: add imagePath column
+        // Migration 1 → 2 (add imagePath)
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
@@ -31,18 +31,28 @@ abstract class ReminderDatabase : RoomDatabase() {
             }
         }
 
+        // Optional: If you had a version 2 → 3 change in the past,
+        // but you no longer need it, fallbackToDestructiveMigration handles it.
+
         fun getInstance(context: Context): ReminderDatabase {
             return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: Room.databaseBuilder(
+
+                val instance = Room.databaseBuilder(
                     context.applicationContext,
                     ReminderDatabase::class.java,
                     "reminder_database"
                 )
+                    // Existing migration 1 → 2
                     .addMigrations(MIGRATION_1_2)
-                    // If you get migration errors during dev, you *can* temporarily use:
-                    // .fallbackToDestructiveMigration()
+
+                    // 🔥 PREVENT ROOM FROM CRASHING ON STARTUP
+                    // If schema mismatches, delete and recreate DB automatically.
+                    .fallbackToDestructiveMigration()
+
                     .build()
-                    .also { INSTANCE = it }
+
+                INSTANCE = instance
+                instance
             }
         }
     }

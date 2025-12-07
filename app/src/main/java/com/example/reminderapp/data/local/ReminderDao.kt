@@ -15,7 +15,7 @@ interface ReminderDao {
     @Query("SELECT * FROM reminders ORDER BY date ASC, time ASC")
     fun getAllReminders(): Flow<List<Reminder>>
 
-    // READ – reminders between two timestamps (used for "specific day")
+    // READ – reminders between two timestamps
     @Query(
         """
         SELECT * FROM reminders 
@@ -25,7 +25,7 @@ interface ReminderDao {
     )
     fun getRemindersForDateRange(startOfDay: Long, endOfDay: Long): Flow<List<Reminder>>
 
-    // READ – single reminder by id
+    // READ – single reminder
     @Query("SELECT * FROM reminders WHERE id = :id")
     suspend fun getReminderById(id: Int): Reminder?
 
@@ -33,11 +33,11 @@ interface ReminderDao {
     @Update
     suspend fun updateReminder(reminder: Reminder)
 
-    // DELETE – single reminder
+    // DELETE single reminder
     @Delete
     suspend fun deleteReminder(reminder: Reminder)
 
-    // DELETE – cleanup completed
+    // DELETE completed reminders
     @Query("DELETE FROM reminders WHERE isCompleted = 1")
     suspend fun deleteCompletedReminders()
 }

@@ -55,6 +55,7 @@ fun ViewReminderScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // Load reminder
     LaunchedEffect(reminderId) {
         val loaded = viewModel.getReminderById(reminderId)
         loaded?.let {
@@ -68,6 +69,7 @@ fun ViewReminderScreen(
         }
     }
 
+    // Show snackbar after update
     LaunchedEffect(showUpdateSnackbar) {
         if (showUpdateSnackbar) {
             snackbarHostState.showSnackbar("Reminder updated successfully")
@@ -99,6 +101,7 @@ fun ViewReminderScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
 
+        // DELETE CONFIRMATION DIALOG
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
@@ -111,8 +114,10 @@ fun ViewReminderScreen(
                                 scope.launch {
                                     viewModel.deleteReminder(r)
                                     showDeleteDialog = false
+
+                                    // 🔴 IMPORTANT FIX:
+                                    // ONLY call this – it will pop back in NavGraph
                                     onReminderDeleted()
-                                    onNavigateBack()
                                 }
                             }
                         },
