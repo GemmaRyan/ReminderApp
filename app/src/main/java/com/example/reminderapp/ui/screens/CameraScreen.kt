@@ -12,17 +12,17 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -37,23 +37,9 @@ import com.google.accompanist.permissions.shouldShowRationale
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executor
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-/**
- * Camera Screen for capturing photos to attach to reminders
- * Implements CameraX integration (20% bonus requirement)
- *
- * Features:
- * - Live camera preview
- * - Photo capture
- * - Permission handling
- * - Photo preview before saving
- *
- * @param onPhotoTaken - Callback with the captured photo URI
- * @param onNavigateBack - Navigate back without taking photo
- */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CameraScreen(
@@ -63,10 +49,8 @@ fun CameraScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    // Camera permission state
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
-    // State for captured photo
     var capturedImageUri by remember { mutableStateOf<Uri?>(null) }
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
 
@@ -84,10 +68,8 @@ fun CameraScreen(
                 .padding(paddingValues)
         ) {
             when {
-                // Permission granted - show camera
                 cameraPermissionState.status.isGranted -> {
                     if (capturedImageUri != null) {
-                        // Show preview of captured photo
                         PhotoPreviewContent(
                             imageUri = capturedImageUri!!,
                             onRetake = { capturedImageUri = null },
@@ -96,7 +78,6 @@ fun CameraScreen(
                             }
                         )
                     } else {
-                        // Show camera preview
                         CameraPreviewContent(
                             context = context,
                             lifecycleOwner = lifecycleOwner,
@@ -110,7 +91,7 @@ fun CameraScreen(
                                             capturedImageUri = uri
                                         },
                                         onError = { exception ->
-                                            android.util.Log.e("CameraScreen", "Photo capture failed", exception)
+                                            android.util.Log.e("CameraScreen", "Capture failed", exception)
                                         }
                                     )
                                 }
@@ -119,7 +100,6 @@ fun CameraScreen(
                     }
                 }
 
-                // Permission not granted - show permission request
                 else -> {
                     PermissionRequestContent(
                         shouldShowRationale = cameraPermissionState.status.shouldShowRationale,
@@ -132,9 +112,6 @@ fun CameraScreen(
     }
 }
 
-/**
- * Camera preview with capture button
- */
 @Composable
 private fun CameraPreviewContent(
     context: Context,
@@ -145,7 +122,6 @@ private fun CameraPreviewContent(
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Camera preview
         AndroidView(
             factory = { ctx ->
                 val previewView = PreviewView(ctx)
@@ -154,26 +130,20 @@ private fun CameraPreviewContent(
                 cameraProviderFuture.addListener({
                     val cameraProvider = cameraProviderFuture.get()
 
-                    // Preview use case
                     val preview = Preview.Builder().build().also {
                         it.setSurfaceProvider(previewView.surfaceProvider)
                     }
 
-                    // Image capture use case
                     val imageCapture = ImageCapture.Builder()
                         .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
                         .build()
 
                     onImageCaptureReady(imageCapture)
 
-                    // Select back camera
                     val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
                     try {
-                        // Unbind all use cases before rebinding
                         cameraProvider.unbindAll()
-
-                        // Bind use cases to camera
                         cameraProvider.bindToLifecycle(
                             lifecycleOwner,
                             cameraSelector,
@@ -181,7 +151,7 @@ private fun CameraPreviewContent(
                             imageCapture
                         )
                     } catch (e: Exception) {
-                        android.util.Log.e("CameraPreview", "Use case binding failed", e)
+                        android.util.Log.e("CameraPreview", "Binding failed", e)
                     }
                 }, executor)
 
@@ -190,15 +160,13 @@ private fun CameraPreviewContent(
             modifier = Modifier.fillMaxSize()
         )
 
-        // Capture button
         FloatingActionButton(
             onClick = onCapture,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 32.dp)
                 .size(72.dp),
-            shape = CircleShape,
-            containerColor = MaterialTheme.colorScheme.primary
+            shape = CircleShape
         ) {
             Icon(
                 imageVector = Icons.Default.Camera,
@@ -209,9 +177,6 @@ private fun CameraPreviewContent(
     }
 }
 
-/**
- * Preview captured photo with retake/confirm options
- */
 @Composable
 private fun PhotoPreviewContent(
     imageUri: Uri,
@@ -219,14 +184,12 @@ private fun PhotoPreviewContent(
     onConfirm: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Display captured image
         Image(
             painter = rememberAsyncImagePainter(imageUri),
             contentDescription = "Captured photo",
             modifier = Modifier.fillMaxSize()
         )
 
-        // Action buttons
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -234,34 +197,23 @@ private fun PhotoPreviewContent(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            // Retake button
             FloatingActionButton(
                 onClick = onRetake,
                 containerColor = MaterialTheme.colorScheme.error
             ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Retake photo"
-                )
+                Icon(Icons.Default.Close, contentDescription = "Retake")
             }
 
-            // Confirm button
             FloatingActionButton(
                 onClick = onConfirm,
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Use photo"
-                )
+                Icon(Icons.Default.Check, contentDescription = "Use photo")
             }
         }
     }
 }
 
-/**
- * Permission request UI
- */
 @Composable
 private fun PermissionRequestContent(
     shouldShowRationale: Boolean,
@@ -318,16 +270,12 @@ private fun PermissionRequestContent(
     }
 }
 
-/**
- * Helper function to take picture and save to file
- */
 private fun takePicture(
     context: Context,
     imageCapture: ImageCapture,
     onImageSaved: (Uri) -> Unit,
     onError: (ImageCaptureException) -> Unit
 ) {
-    // Create output file
     val photoFile = File(
         context.getExternalFilesDir(null),
         SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US)

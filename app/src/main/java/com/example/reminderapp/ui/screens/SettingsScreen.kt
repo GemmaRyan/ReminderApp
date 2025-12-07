@@ -5,7 +5,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,13 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.example.reminderapp.ui.components.TopAppBarComponent
 import com.example.reminderapp.ui.viewmodel.ReminderViewModel
 
-/**
- * Settings Screen
- * Allows user to toggle dark mode and manage app settings
- *
- * @param viewModel - ViewModel managing app state
- * @param onNavigateBack - Navigate back to previous screen
- */
 @Composable
 fun SettingsScreen(
     viewModel: ReminderViewModel,
@@ -44,7 +39,6 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // App Theme Section
             Text(
                 text = "Appearance",
                 style = MaterialTheme.typography.titleLarge,
@@ -63,9 +57,7 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = if (isDarkMode) Icons.Default.DarkMode else Icons.Default.LightMode,
                             contentDescription = null,
@@ -96,7 +88,6 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // About Section
             Text(
                 text = "About",
                 style = MaterialTheme.typography.titleLarge,
@@ -108,12 +99,8 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.Info,
                             contentDescription = null,
@@ -142,7 +129,7 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "A simple and elegant reminder app built with Jetpack Compose and Material 3 design.",
+                        text = "A simple reminder app built with Jetpack Compose and Material 3.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

@@ -1,22 +1,27 @@
 package com.example.reminderapp
 
 import android.app.Application
-import android.util.Log
+import com.example.reminderapp.data.local.ReminderDatabase
+import com.example.reminderapp.data.local.ReminderRepository
+import com.example.reminderapp.utils.PreferencesManager
 import com.example.reminderapp.utils.WorkManagerScheduler
 
-/**
- * Custom Application class
- * Initializes WorkManager and other app-wide components
- */
 class ReminderApplication : Application() {
+
+    lateinit var repository: ReminderRepository
+        private set
+
+    lateinit var preferencesManager: PreferencesManager
+        private set
 
     override fun onCreate() {
         super.onCreate()
 
-        // Initialize WorkManager periodic tasks
-        // This schedules background cleanup to run every 24 hours
-        WorkManagerScheduler.schedulePeriodicCleanup(this)
+        val db = ReminderDatabase.getInstance(this)
+        repository = ReminderRepository(db.reminderDao())
+        preferencesManager = PreferencesManager(this)
 
-        Log.d("ReminderApplication", "Application initialized, WorkManager scheduled")
+        // schedule periodic cleanup work
+        WorkManagerScheduler.schedulePeriodicCleanup(this)
     }
 }

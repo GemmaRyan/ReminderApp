@@ -24,15 +24,6 @@ import com.example.reminderapp.ui.viewmodel.ReminderViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * Calendar Screen
- * Allows user to pick a specific date to view reminders
- * Matches the "Pick a date" screen in Figma prototype
- *
- * @param viewModel - ViewModel managing app state
- * @param onNavigateBack - Navigate back to previous screen
- * @param onDateSelected - Callback when date is selected
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
@@ -40,7 +31,6 @@ fun CalendarScreen(
     onNavigateBack: () -> Unit,
     onDateSelected: () -> Unit
 ) {
-    // Current calendar state
     var currentMonth by remember { mutableStateOf(Calendar.getInstance()) }
     var selectedDate by remember { mutableStateOf<Calendar?>(null) }
 
@@ -58,7 +48,6 @@ fun CalendarScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // Month and Year selector
             MonthYearSelector(
                 currentMonth = currentMonth,
                 onPreviousMonth = {
@@ -75,7 +64,6 @@ fun CalendarScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Calendar grid
             CalendarGrid(
                 currentMonth = currentMonth,
                 selectedDate = selectedDate,
@@ -86,11 +74,10 @@ fun CalendarScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Find button
             Button(
                 onClick = {
                     selectedDate?.let { date ->
-                        viewModel.loadRemindersForDate(date.timeInMillis)
+                        viewModel.setSelectedDate(date.timeInMillis)
                         onDateSelected()
                     }
                 },
@@ -112,9 +99,6 @@ fun CalendarScreen(
     }
 }
 
-/**
- * Month and Year selector with navigation arrows
- */
 @Composable
 private fun MonthYearSelector(
     currentMonth: Calendar,
@@ -150,21 +134,16 @@ private fun MonthYearSelector(
     }
 }
 
-/**
- * Calendar grid showing days of the month
- */
 @Composable
 private fun CalendarGrid(
     currentMonth: Calendar,
     selectedDate: Calendar?,
     onDateSelected: (Calendar) -> Unit
 ) {
-    // Get all days for the current month
     val daysInMonth = getDaysInMonth(currentMonth)
     val today = Calendar.getInstance()
 
     Column {
-        // Week day headers
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -183,7 +162,6 @@ private fun CalendarGrid(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Calendar days
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
             modifier = Modifier.fillMaxWidth(),
@@ -199,7 +177,6 @@ private fun CalendarGrid(
                         onClick = { onDateSelected(day) }
                     )
                 } else {
-                    // Empty cell for spacing
                     Box(modifier = Modifier.size(40.dp))
                 }
             }
@@ -207,9 +184,6 @@ private fun CalendarGrid(
     }
 }
 
-/**
- * Individual day cell in the calendar
- */
 @Composable
 private fun DayCell(
     day: Calendar,
@@ -246,35 +220,26 @@ private fun DayCell(
     }
 }
 
-/**
- * Get all days in a month including leading/trailing empty cells
- */
 private fun getDaysInMonth(month: Calendar): List<Calendar?> {
     val days = mutableListOf<Calendar?>()
-
     val calendar = month.clone() as Calendar
     calendar.set(Calendar.DAY_OF_MONTH, 1)
 
-    // Add empty cells for days before the 1st
-    val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1 // 0 = Sunday
+    val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1
     repeat(firstDayOfWeek) {
         days.add(null)
     }
 
-    // Add all days in the month
     val maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
     for (day in 1..maxDay) {
-        val dayCalendar = calendar.clone() as Calendar
-        dayCalendar.set(Calendar.DAY_OF_MONTH, day)
-        days.add(dayCalendar)
+        val dayCal = calendar.clone() as Calendar
+        dayCal.set(Calendar.DAY_OF_MONTH, day)
+        days.add(dayCal)
     }
 
     return days
 }
 
-/**
- * Extension function to check if two calendars represent the same day
- */
 private fun Calendar.isSameDay(other: Calendar): Boolean {
     return this.get(Calendar.YEAR) == other.get(Calendar.YEAR) &&
             this.get(Calendar.DAY_OF_YEAR) == other.get(Calendar.DAY_OF_YEAR)

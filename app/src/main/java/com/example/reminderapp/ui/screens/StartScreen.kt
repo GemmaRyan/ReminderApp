@@ -10,23 +10,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/**
- * Start Screen (Splash Screen)
- * First screen user sees when opening the app
- * Displays logo and start button matching Figma design
- *
- * @param onNavigateToMain - Callback to navigate to main reminders screen
- */
 @Composable
 fun StartScreen(
     onNavigateToMain: () -> Unit
 ) {
-    // Auto-navigate after 2 seconds (optional - remove if you want manual start only)
-    // LaunchedEffect(Unit) {
-    //     delay(2000)
-    //     onNavigateToMain()
-    // }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -37,12 +24,8 @@ fun StartScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo placeholder
-            // TODO: Add your app logo here
-            // For now, we'll use a text placeholder
             Card(
-                modifier = Modifier
-                    .size(200.dp),
+                modifier = Modifier.size(200.dp),
                 shape = RoundedCornerShape(100.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -52,21 +35,16 @@ fun StartScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "📝",
-                        fontSize = 80.sp
-                    )
+                    Text(text = "📝", fontSize = 80.sp)
                 }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // App name
             Text(
                 text = "Reminder App",
                 style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+                fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -79,16 +57,12 @@ fun StartScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Start button
             Button(
                 onClick = onNavigateToMain,
                 modifier = Modifier
                     .width(200.dp)
                     .height(56.dp),
-                shape = RoundedCornerShape(28.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                shape = RoundedCornerShape(28.dp)
             ) {
                 Text(
                     text = "Start",

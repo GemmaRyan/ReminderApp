@@ -18,20 +18,12 @@ import androidx.compose.ui.unit.dp
 import com.example.reminderapp.data.model.Reminder
 import com.example.reminderapp.ui.theme.*
 
-/**
- * Reusable Reminder Card Component
- * Displays a reminder with color coding matching Figma design
- *
- * @param reminder - The reminder data to display
- * @param onClick - Callback when card is tapped
- */
 @Composable
 fun ReminderCard(
     reminder: Reminder,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Get color based on color code
     val cardColor = when (reminder.colorCode) {
         0 -> ReminderBlue
         1 -> ReminderPink
@@ -55,7 +47,6 @@ fun ReminderCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Color indicator bar on the left
             Box(
                 modifier = Modifier
                     .width(4.dp)
@@ -66,11 +57,7 @@ fun ReminderCard(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // Content
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                // Title
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = reminder.title,
                     style = MaterialTheme.typography.titleMedium,
@@ -81,10 +68,7 @@ fun ReminderCard(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Time
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.AccessTime,
                         contentDescription = "Time",
@@ -99,12 +83,9 @@ fun ReminderCard(
                     )
                 }
 
-                // Location (if available)
                 if (reminder.location.isNotBlank()) {
                     Spacer(modifier = Modifier.height(4.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = "Location",
@@ -122,7 +103,6 @@ fun ReminderCard(
                     }
                 }
 
-                // Description preview
                 if (reminder.description.isNotBlank()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(

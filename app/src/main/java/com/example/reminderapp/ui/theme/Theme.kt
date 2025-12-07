@@ -15,9 +15,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-/**
- * Dark color scheme for the app
- */
 private val DarkColorScheme = darkColorScheme(
     primary = DarkPrimary,
     onPrimary = DarkOnPrimary,
@@ -41,9 +38,6 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = DarkOnSurface
 )
 
-/**
- * Light color scheme for the app
- */
 private val LightColorScheme = lightColorScheme(
     primary = LightPrimary,
     onPrimary = LightOnPrimary,
@@ -67,14 +61,9 @@ private val LightColorScheme = lightColorScheme(
     onSurface = LightOnSurface
 )
 
-/**
- * Main theme for the Reminder App
- * Supports both light and dark mode (Material 3)
- */
 @Composable
 fun ReminderAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
@@ -93,7 +82,8 @@ fun ReminderAppTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view)
+                .isAppearanceLightStatusBars = !darkTheme
         }
     }
 

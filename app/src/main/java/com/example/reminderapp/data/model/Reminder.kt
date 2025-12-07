@@ -4,8 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * Data class representing a Reminder entity
- * This will be stored in the Room database
+ * Reminder entity stored in Room.
  */
 @Entity(tableName = "reminders")
 data class Reminder(
@@ -13,23 +12,19 @@ data class Reminder(
     val id: Int = 0,
 
     val title: String,
-
     val description: String,
 
-    // Store date as timestamp (milliseconds since epoch)
-    val date: Long,
+    // date/time of the reminder
+    val date: Long,          // millis since epoch (used for day filters)
+    val time: String,        // "HH:mm"
 
-    val time: String, // Format: "HH:mm" (e.g., "14:30")
-
-    // Color coding: 0=Blue, 1=Pink, 2=Green, 3=Yellow, etc.
+    // color coding 0..4
     val colorCode: Int = 0,
 
     val location: String = "",
-
     val isCompleted: Boolean = false,
-
     val createdAt: Long = System.currentTimeMillis(),
 
-    // NEW: Image path for camera integration
+    // Camera image file path (if any)
     val imagePath: String = ""
 )

@@ -14,32 +14,29 @@ import androidx.navigation.compose.rememberNavController
 import com.example.reminderapp.navigation.ReminderNavGraph
 import com.example.reminderapp.ui.theme.ReminderAppTheme
 import com.example.reminderapp.ui.viewmodel.ReminderViewModel
+import com.example.reminderapp.ui.viewmodel.ReminderViewModelFactory
 
-/**
- * Main Activity - Entry point of the app
- * Sets up Jetpack Compose with Material 3 theme and navigation
- */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            // Get the ViewModel (shared across all screens)
-            val viewModel: ReminderViewModel = viewModel()
 
-            // Collect dark mode state
+        val app = application as ReminderApplication
+        val factory = ReminderViewModelFactory(
+            repository = app.repository,
+            prefs = app.preferencesManager
+        )
+
+        setContent {
+            val viewModel: ReminderViewModel = viewModel(factory = factory)
             val isDarkMode by viewModel.isDarkMode.collectAsState()
 
-            // Apply theme
             ReminderAppTheme(darkTheme = isDarkMode) {
-                // Create navigation controller
                 val navController = rememberNavController()
 
-                // Surface container using the background color from theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Set up navigation graph
                     ReminderNavGraph(
                         navController = navController,
                         viewModel = viewModel

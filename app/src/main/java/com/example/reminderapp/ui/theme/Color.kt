@@ -2,7 +2,6 @@ package com.example.reminderapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Dark Theme Colors (Primary)
 val DarkPrimary = Color(0xFF7AB8D4)
 val DarkOnPrimary = Color(0xFF003544)
 val DarkPrimaryContainer = Color(0xFF004D61)
@@ -28,7 +27,6 @@ val DarkOnBackground = Color(0xFFE1E2E5)
 val DarkSurface = Color(0xFF191C1E)
 val DarkOnSurface = Color(0xFFE1E2E5)
 
-// Light Theme Colors
 val LightPrimary = Color(0xFF006782)
 val LightOnPrimary = Color(0xFFFFFFFF)
 val LightPrimaryContainer = Color(0xFFB8EAFF)
@@ -54,7 +52,7 @@ val LightOnBackground = Color(0xFF191C1E)
 val LightSurface = Color(0xFFFBFCFF)
 val LightOnSurface = Color(0xFF191C1E)
 
-// Reminder Color Codes (matching your Figma design)
+// Reminder chips
 val ReminderBlue = Color(0xFF6B9CDE)
 val ReminderPink = Color(0xFFEFACC2)
 val ReminderGreen = Color(0xFF88C399)

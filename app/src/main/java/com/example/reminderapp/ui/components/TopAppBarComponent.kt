@@ -6,14 +6,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 
-/**
- * Reusable Top App Bar component
- * Provides consistent navigation across screens
- *
- * @param title - Title to display
- * @param onNavigateBack - Callback when back button is pressed
- * @param actions - Optional actions (icons) on the right side
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarComponent(
